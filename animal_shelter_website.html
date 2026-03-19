@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ცხოველთა თავშესაფარი</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#111}
+header{padding:60px 20px;text-align:center;background:white;border-bottom:1px solid #eee}
+h1{font-size:36px;font-weight:700}
+header p{margin-top:10px;color:#666}
+.container{max-width:1200px;margin:auto;padding:40px 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(500px,1fr));gap:50px}
+.dog{background:white;border-radius:20px;overflow:hidden;box-shadow:0 15px 35px rgba(0,0,0,0.08);transition:0.3s}
+.dog:hover{transform:translateY(-10px);box-shadow:0 25px 60px rgba(0,0,0,0.15)}
+.dog img{width:100%;height:420px;object-fit:cover}
+.dog-content{padding:25px}
+.dog h3{font-size:22px;margin-bottom:10px}
+.story-text{font-size:15px;line-height:1.6;color:#444;margin-bottom:15px}
+.btn{display:block;text-align:center;padding:14px;border-radius:14px;background:#111;color:white;font-weight:600;cursor:pointer;transition:0.2s}
+.btn:hover{background:#333}
+
+.modal,.success-box{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center}
+.modal-content,.success-content{background:white;padding:25px;border-radius:20px;width:320px;text-align:center;animation:pop .3s ease}
+.modal-content input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #ddd}
+.modal-content button{width:100%;padding:12px;border:none;border-radius:12px;margin-top:10px;background:#111;color:white;font-weight:bold;cursor:pointer}
+.success-content h2{color:#16a34a}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🐾 თავშესაფარი</h1>
+<p>იპოვე შენი ახალი მეგობარი</p>
+
+<div style="margin-top:35px;padding:35px;background:linear-gradient(135deg,#ffedd5,#fde68a);border-radius:20px;max-width:850px;margin-left:auto;margin-right:auto;box-shadow:0 20px 60px rgba(0,0,0,0.08)">
+<h3 style="margin-bottom:18px;font-size:24px;font-weight:700;color:#7c2d12">🙏 შეგიძლიათ დაეხმაროთ ახალი თავშესაფრების გახსნაში</h3>
+<p style="font-size:17px;line-height:1.7;color:#5b341f">
+ამ ეტაპზე ძაღლები იმყოფებიან სახლის პირობებში დროებით. ჩვენ ვზრუნავთ მათზე ჩვენი შესაძლებლობების ფარგლებში, თუმცა გვჭირდება მხარდაჭერა, რათა გავხსნათ სრულფასოვანი თავშესაფარი, სადაც ისინი უსაფრთხოდ და კომფორტულად იცხოვრებენ. თქვენი დახმარება პირდაპირ ცვლის მათ მომავალს.
+</p>
+
+<div style="margin-top:28px;text-align:center">
+  <a href="#donation" style="display:inline-block;padding:16px 40px;background:#7c2d12;color:white;font-weight:700;border-radius:14px;text-decoration:none;font-size:16px;box-shadow:0 10px 25px rgba(124,45,18,0.4);transition:0.3s">❤️ დახმარება</a>
+</div>
+
+</div>
+</header>
+
+<div class="container">
+<div class="grid" id="dogs"></div>
+</div>
+
+<script>
+const dogs=[
+{
+name:"ბუჩო",
+age:"13 წლის",
+img:"https://placedog.net/900/700?id=10",
+story:"ბუჩო უკვე 13 წლისაა. წლები ქუჩაში გაატარა და ასაკის მიუხედავად, ისევ ელოდება ოჯახს. მას უყვარს მშვიდი გარემო და თბილი საწოლი. ასაკოვანი ძაღლები განსაკუთრებით საჭიროებენ სიყვარულს."
+},
+{
+name:"ტუზი",
+age:"7 წლის",
+img:"https://placedog.net/900/700?id=22",
+story:"ტუზი 7 წლის ენერგიული ძაღლია. ბავშვებთან კარგად ეგუება და უყვარს სეირნობა. მას სჭირდება აქტიური ოჯახი, რომელიც მას ყურადღებას დაუთმობს."
+},
+{
+name:"ჯეკი",
+age:"18 წლის",
+img:"https://placedog.net/900/700?id=35",
+story:"ჯეკი 18 წლის მოხუცი ძაღლია. მას სმენა ნაწილობრივ დაუქვეითდა, მაგრამ საოცრად მშვიდი და ერთგულია. მისთვის ყველაზე მნიშვნელოვანია თბილი კუთხე და მზრუნველი ადამიანი."
+},
+{
+name:"ლორდი",
+age:"6 წლის",
+img:"https://placedog.net/900/700?id=44",
+story:"ლორდი 6 წლის ჯანმრთელი და ძლიერი ძაღლია. მას უყვარს თამაში და სირბილი. კარგად ეგუება სხვა ცხოველებსაც."
+}
+];
+
+// ავტომატურად დავამატოთ მინიმუმ 22 ძაღლი
+const extraNames = [
+"როკი","მაქსი","ლეო","ბონი","ბრუნო","კოკო","ჩარლი","სიმბა","ლილუ","ტაიგერი",
+"დიუკი","მოლი","ზარა","ლუკა","მაია","ბაქსი","ნიკო","რექსი"
+];
+
+const extraAges = ["5 წლის","8 წლის","12 წლის","9 წლის","14 წლის","6 წლის","15 წლის","7 წლის","19 წლის","10 წლის"];
+
+extraNames.forEach((name,index)=>{
+  dogs.push({
+    name:name,
+    age: extraAges[index % extraAges.length],
+    img:`https://placedog.net/900/700?id=${60+index}`,
+    story:`${name} გადარჩენილია რთული პირობებიდან. ის ახლა უსაფრთხოდ იმყოფება და ელოდება ოჯახს, რომელიც მას სიყვარულსა და სითბოს აჩუქებს.`
+  });
+});
+
+const container=document.getElementById("dogs");
+
+dogs.forEach(d=>{
+  const el=document.createElement("div");
+  el.className="dog";
+  el.innerHTML=`
+    <img src="${d.img}">
+    <div class="dog-content">
+      <h3>${d.name} • <span style="font-size:14px;color:#666">${d.age}</span></h3>
+      <div class="story-text">${d.story}</div>
+      <div class="btn" onclick="openForm('${d.name}')">აიყვანე</div>
+    </div>
+  `;
+  container.appendChild(el);
+});
+
+function openForm(name){
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("dogName").value=name;
+}
+
+function sendForm(){
+  const firstName = document.querySelector('input[placeholder="სახელი"]');
+  const lastName = document.querySelector('input[placeholder="გვარი"]');
+  const city = document.querySelector('input[placeholder="ქალაქი"]');
+  const street = document.querySelector('input[placeholder="ქუჩა"]');
+  const phone = document.querySelector('input[placeholder="ტელეფონი"]');
+
+  let isValid = true;
+
+  [firstName,lastName,city,street,phone].forEach(input => {
+    if(!input.value.trim()){
+      input.style.border = "2px solid red";
+      isValid = false;
+    } else {
+      input.style.border = "1px solid #ddd";
+    }
+  });
+
+  if(!isValid){
+    return;
+  }
+
+  const queue = Math.floor(Math.random()*500)+50;
+  document.getElementById("modal").style.display="none";
+  const box = document.getElementById("successBox");
+  document.getElementById("successText").innerText="რიგის ნომერი: #"+queue;
+  box.style.display="flex";
+
+  setTimeout(() => {
+    box.style.display="none";
+  }, 10000);
+}
+</script>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3>ცხოველის აყვანა</h3>
+<input id="dogName" readonly>
+<input placeholder="სახელი">
+<input placeholder="გვარი">
+<input placeholder="ქალაქი">
+<input placeholder="ქუჩა">
+<input placeholder="ტელეფონი">
+<button type="button" onclick="sendForm()">გაგზავნა</button>
+</div>
+</div>
+
+<div class="success-box" id="successBox">
+<div class="success-content">
+<h2>✅ წარმატებით გაიგზავნა</h2>
+<p id="successText"></p>
+</div>
+</div>
+
+<div id="donation" style="background:#111;color:white;padding:60px 20px;margin-top:60px">
+  <div style="max-width:900px;margin:auto;text-align:center">
+    <h2 style="margin-bottom:20px">💳 მხარდაჭერა საბანკო გადარიცხვით</h2>
+    <p style="opacity:.8;margin-bottom:25px">თითოეული ლარი მნიშვნელოვანია.</p>
+
+    <div style="background:#1f1f1f;padding:20px;border-radius:16px;margin-bottom:15px">
+      <h3>🏦 საქართველოს ბანკი</h3>
+      <p style="font-size:18px;font-weight:bold">GE00 BG00 0000 0000 0000 00</p>
+    </div>
+
+    <div style="background:#1f1f1f;padding:20px;border-radius:16px">
+      <h3>🏦 TBC ბანკი</h3>
+      <p style="font-size:18px;font-weight:bold">GE00 TB00 0000 0000 0000 00</p>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
