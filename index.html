@@ -28,10 +28,22 @@ header p{margin-top:10px;color:#666}
 .btn:hover{background:#333}
 
 .modal,.success-box{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center}
-.modal-content,.success-content{background:white;padding:25px;border-radius:20px;width:320px;text-align:center;animation:pop .3s ease}
+.modal-content,.success-content{background:white;padding:25px;border-radius:20px;width:320px;text-align:center;animation:pop .3s ease;position:relative}
+
 .modal-content input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #ddd}
 .modal-content button{width:100%;padding:12px;border:none;border-radius:12px;margin-top:10px;background:#111;color:white;font-weight:bold;cursor:pointer}
 .success-content h2{color:#16a34a}
+
+/* CLOSE BUTTON */
+.close{
+position:absolute;
+top:10px;
+right:15px;
+font-size:28px;
+cursor:pointer;
+color:#555;
+}
+.close:hover{color:#000;}
 
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 
@@ -53,7 +65,7 @@ header p{margin-top:10px;color:#666}
 ამ ეტაპზე ძაღლები იმყოფებიან სახლის პირობებში დროებით. ჩვენ ვზრუნავთ მათზე ჩვენი შესაძლებლობების ფარგლებში, თუმცა გვჭირდება მხარდაჭერა.
 </p>
 <div style="margin-top:28px;text-align:center">
-<a href="#donation" style="display:inline-block;padding:16px 40px;background:#7c2d12;color:white;font-weight:700;border-radius:14px;text-decoration:none;font-size:16px;box-shadow:0 10px 25px rgba(124,45,18,0.4);">❤️ დახმარება</a>
+<a href="#donation" style="display:inline-block;padding:16px 40px;background:#7c2d12;color:white;font-weight:700;border-radius:14px;text-decoration:none;font-size:16px;">❤️ დახმარება</a>
 </div>
 </div>
 </header>
@@ -63,87 +75,57 @@ header p{margin-top:10px;color:#666}
 </div>
 
 <script>
-// მხოლოდ ის ფოტოები რაც მომხმარებელმა მოგვცა — ზედმეტი კოდის გარეშე
 const dogs=[
-{
-name:"ბუჩო",
-img:"https://knews.ge/wp-content/uploads/41566242_317408125676440_5402583007372509184_n.jpg",
-story:"ბუჩო გადარჩენილია მძიმე პირობებიდან და ელოდება სიყვარულით სავსე ოჯახს."
-},
-{
-name:"ტუზი",
-img:"https://bm.ge/uploads/files/2025/08/18/288239/miusafari-tskhovelebi_w_h.jpeg",
-story:"ტუზი აქტიური და მეგობრული ძაღლია."
-},
-{
-name:"ჯეკი",
-img:"https://publika.ge/app/uploads/2024/08/publika.ge-456412489-848930607336002-5837164432617329891-n-1024x695.jpg",
-story:"ჯეკი მშვიდი და ერთგული ძაღლია."
-},
-{
-name:"ლორდი",
-img:"https://tse4.mm.bing.net/th/id/OIP.h6bUC5UaMEfLV9UZXq1c1AHaJ4?pid=Api",
-story:"ლორდი ძლიერი და კეთილი ბუნების ძაღლია."
-}
-,
-{
-name:"ანი და ლეო",
-img:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilTJXvqN5xluBOQT0EloJzN2EVZ0j1c3uCVhyphenhyphenKhH_86-DGJINB2nkFOLabQqXLVTPIhUtYo1BkwZzkMQqVcZ3oo-U0y7QouE9Pg66nqo3IBEDYgtxCsKjC6tsVm7JbmN-oHikC3eJkBVo/s1600/d5710fd04d9b.jpg",
-story:"ანი და ლეო პატარა და ძალიან ნაზი ლეკვები არიან. მათი ყოფილი პატრონი მათზე უარს ამბობდა და ქუჩაში დატოვა. ახლა ისინი უსაფრთხოდ იმყოფებიან და ელოდებიან ოჯახს, რომელიც ორივეს ერთად მიიღებს და სითბოსა და სიყვარულს აჩუქებს."
-}
+{name:"ბუჩო",img:"https://knews.ge/wp-content/uploads/41566242_317408125676440_5402583007372509184_n.jpg",story:"ბუჩო გადარჩენილია მძიმე პირობებიდან და ელოდება სიყვარულით სავსე ოჯახს."},
+{name:"ტუზი",img:"https://bm.ge/uploads/files/2025/08/18/288239/miusafari-tskhovelebi_w_h.jpeg",story:"ტუზი აქტიური და მეგობრული ძაღლია."},
+{name:"ჯეკი",img:"https://publika.ge/app/uploads/2024/08/publika.ge-456412489-848930607336002-5837164432617329891-n-1024x695.jpg",story:"ჯეკი მშვიდი და ერთგული ძაღლია."},
+{name:"ლორდი",img:"https://tse4.mm.bing.net/th/id/OIP.h6bUC5UaMEfLV9UZXq1c1AHaJ4?pid=Api",story:"ლორდი ძლიერი და კეთილი ბუნების ძაღლია."},
+{name:"ანი და ლეო",img:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilTJXvqN5xluBOQT0EloJzN2EVZ0j1c3uCVhyphenhyphenKhH_86-DGJINB2nkFOLabQqXLVTPIhUtYo1BkwZzkMQqVcZ3oo-U0y7QouE9Pg66nqo3IBEDYgtxCsKjC6tsVm7JbmN-oHikC3eJkBVo/s1600/d5710fd04d9b.jpg",story:"ანი და ლეო პატარა ლეკვები არიან."}
 ];
 
 const container=document.getElementById("dogs");
 
 dogs.forEach(d=>{
-  const el=document.createElement("div");
-  el.className="dog";
-  el.innerHTML=`
-    <img src="${d.img}" alt="${d.name}">
-    <div class="dog-content">
-      <h3>${d.name}</h3>
-      <div class="story-text">${d.story}</div>
-      <div class="btn" onclick="openForm('${d.name}')">აიყვანე</div>
-    </div>
-  `;
-  container.appendChild(el);
+const el=document.createElement("div");
+el.className="dog";
+el.innerHTML=`
+<img src="${d.img}">
+<div class="dog-content">
+<h3>${d.name}</h3>
+<div class="story-text">${d.story}</div>
+<div class="btn" onclick="openForm('${d.name}')">აიყვანე</div>
+</div>`;
+container.appendChild(el);
 });
 
 function openForm(name){
-  document.getElementById("modal").style.display="flex";
-  document.getElementById("dogName").value=name;
+document.getElementById("modal").style.display="flex";
+document.getElementById("dogName").value=name;
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
 }
 
 function sendForm(){
-  const inputs=document.querySelectorAll('.modal-content input:not([readonly])');
-  let valid=true;
+document.getElementById("modal").style.display="none";
+document.getElementById("successBox").style.display="flex";
+}
 
-  inputs.forEach(input=>{
-    if(!input.value.trim()){
-      input.style.border="2px solid red";
-      valid=false;
-    }else{
-      input.style.border="1px solid #ddd";
-    }
-  });
-
-  if(!valid) return;
-
-  const queue=Math.floor(Math.random()*500)+50;
-  document.getElementById("modal").style.display="none";
-
-  const box=document.getElementById("successBox");
-  document.getElementById("successText").innerText="რიგის ნომერი: #"+queue;
-  box.style.display="flex";
-
-  setTimeout(()=>{
-    box.style.display="none";
-  },10000);
+// CLICK OUTSIDE CLOSE
+window.onclick=function(e){
+const modal=document.getElementById("modal");
+if(e.target===modal){
+modal.style.display="none";
+}
 }
 </script>
 
 <div class="modal" id="modal">
 <div class="modal-content">
+
+<span class="close" onclick="closeModal()">&times;</span>
+
 <h3>ცხოველის აყვანა</h3>
 <input id="dogName" readonly>
 <input placeholder="სახელი">
@@ -151,29 +133,14 @@ function sendForm(){
 <input placeholder="ქალაქი">
 <input placeholder="ქუჩა">
 <input placeholder="ტელეფონი">
-<button type="button" onclick="sendForm()">გაგზავნა</button>
+<button onclick="sendForm()">გაგზავნა</button>
+
 </div>
 </div>
 
 <div class="success-box" id="successBox">
 <div class="success-content">
 <h2>✅ წარმატებით გაიგზავნა</h2>
-<p id="successText"></p>
-</div>
-</div>
-
-<div id="donation" style="background:#111;color:white;padding:60px 20px;margin-top:60px">
-<div style="max-width:900px;margin:auto;text-align:center">
-<h2 style="margin-bottom:20px">💳 მხარდაჭერა საბანკო გადარიცხვით</h2>
-<p style="opacity:.8;margin-bottom:25px">თითოეული ლარი მნიშვნელოვანია.</p>
-<div style="background:#1f1f1f;padding:20px;border-radius:16px;margin-bottom:15px">
-<h3>🏦 საქართველოს ბანკი</h3>
-<p style="font-size:18px;font-weight:bold">GE61BG0000000611213396</p>
-</div>
-<div style="background:#1f1f1f;padding:20px;border-radius:16px">
-<h3>🏦 TBC ბანკი</h3>
-<p style="font-size:18px;font-weight:bold">GE14TB7768945064300046</p>
-</div>
 </div>
 </div>
 
