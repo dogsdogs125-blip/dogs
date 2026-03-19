@@ -10,139 +10,314 @@
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:#f8fafc;color:#111}
 
-header{padding:60px 20px;text-align:center;background:white;border-bottom:1px solid #eee}
+header{
+  padding:60px 20px;
+  text-align:center;
+  background:white;
+  border-bottom:1px solid #eee;
+}
 h1{font-size:36px;font-weight:700}
 header p{margin-top:10px;color:#666}
 
 .container{max-width:1200px;margin:auto;padding:40px 20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:40px;
+}
 
-.dog{background:white;border-radius:20px;overflow:hidden;box-shadow:0 15px 35px rgba(0,0,0,0.08);transition:0.3s}
-.dog:hover{transform:translateY(-8px);box-shadow:0 25px 60px rgba(0,0,0,0.15)}
-.dog img{width:100%;height:420px;object-fit:cover}
+.dog{
+  background:white;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 15px 35px rgba(0,0,0,0.08);
+  transition:.3s;
+}
+.dog:hover{
+  transform:translateY(-8px);
+  box-shadow:0 25px 60px rgba(0,0,0,0.15);
+}
+.dog img{
+  width:100%;
+  height:420px;
+  object-fit:cover;
+}
 .dog-content{padding:25px}
 .dog h3{font-size:22px;margin-bottom:10px}
-.story-text{font-size:15px;line-height:1.6;color:#444;margin-bottom:15px}
+.story-text{
+  font-size:15px;
+  line-height:1.6;
+  color:#444;
+  margin-bottom:15px;
+}
 
-.btn{display:block;text-align:center;padding:14px;border-radius:14px;background:#111;color:white;font-weight:600;cursor:pointer;transition:0.2s}
+.btn{
+  display:block;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+  background:#111;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+  user-select:none;
+}
 .btn:hover{background:#333}
 
-.modal,.success-box{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center}
-.modal-content,.success-content{background:white;padding:25px;border-radius:20px;width:320px;text-align:center;animation:pop .3s ease;position:relative}
+.btn.disabled{
+  background:#9ca3af !important;
+  cursor:not-allowed;
+  pointer-events:none;
+}
 
-.modal-content input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:1px solid #ddd}
-.modal-content button{width:100%;padding:12px;border:none;border-radius:12px;margin-top:10px;background:#111;color:white;font-weight:bold;cursor:pointer}
+.modal,.success-box{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal-content,.success-content{
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  width:320px;
+  text-align:center;
+  animation:pop .3s ease;
+  position:relative;
+}
+
+.modal-content input{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  border:1px solid #ddd;
+  outline:none;
+}
+
+.modal-content button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  margin-top:10px;
+  background:#111;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
 .success-content h2{color:#16a34a}
 
-/* CLOSE BUTTON */
 .close{
-position:absolute;
-top:10px;
-right:15px;
-font-size:28px;
-cursor:pointer;
-color:#555;
+  position:absolute;
+  top:10px;
+  right:15px;
+  font-size:28px;
+  cursor:pointer;
+  color:#555;
 }
-.close:hover{color:#000;}
+.close:hover{color:#000}
 
-@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes pop{
+  0%{transform:scale(.8);opacity:0}
+  100%{transform:scale(1);opacity:1}
+}
 
 @media(max-width:600px){
-.dog img{height:260px}
-.grid{gap:25px}
+  .dog img{height:260px}
+  .grid{gap:25px}
 }
 </style>
 </head>
 <body>
 
 <header>
-<h1>🐾 თავშესაფარი</h1>
-<p>იპოვე შენი ახალი მეგობარი</p>
+  <h1>🐾 თავშესაფარი</h1>
+  <p>იპოვე შენი ახალი მეგობარი</p>
 
-<div style="margin-top:35px;padding:35px;background:linear-gradient(135deg,#ffedd5,#fde68a);border-radius:20px;max-width:850px;margin-left:auto;margin-right:auto;box-shadow:0 20px 60px rgba(0,0,0,0.08)">
-<h3 style="margin-bottom:18px;font-size:24px;font-weight:700;color:#7c2d12">🙏 შეგიძლიათ დაეხმაროთ ახალი თავშესაფრების გახსნაში</h3>
-<p style="font-size:17px;line-height:1.7;color:#5b341f">
-ამ ეტაპზე ძაღლები იმყოფებიან სახლის პირობებში დროებით. ჩვენ ვზრუნავთ მათზე ჩვენი შესაძლებლობების ფარგლებში, თუმცა გვჭირდება მხარდაჭერა.
-</p>
-<div style="margin-top:28px;text-align:center">
-<a href="#donation" style="display:inline-block;padding:16px 40px;background:#7c2d12;color:white;font-weight:700;border-radius:14px;text-decoration:none;font-size:16px;">❤️ დახმარება</a>
-</div>
-</div>
+  <div style="margin-top:35px;padding:35px;background:linear-gradient(135deg,#ffedd5,#fde68a);border-radius:20px;max-width:850px;margin-left:auto;margin-right:auto;box-shadow:0 20px 60px rgba(0,0,0,0.08)">
+    <h3 style="margin-bottom:18px;font-size:24px;font-weight:700;color:#7c2d12">
+      🙏 შეგიძლიათ დაეხმაროთ ახალი თავშესაფრების გახსნაში
+    </h3>
+    <p style="font-size:17px;line-height:1.7;color:#5b341f">
+      ამ ეტაპზე ძაღლები იმყოფებიან სახლის პირობებში დროებით. ჩვენ ვზრუნავთ მათზე ჩვენი შესაძლებლობების ფარგლებში, თუმცა გვჭირდება მხარდაჭერა.
+    </p>
+    <div style="margin-top:28px;text-align:center">
+      <a href="#donation" style="display:inline-block;padding:16px 40px;background:#7c2d12;color:white;font-weight:700;border-radius:14px;text-decoration:none;font-size:16px;">
+        ❤️ დახმარება
+      </a>
+    </div>
+  </div>
 </header>
 
 <div class="container">
-<div class="grid" id="dogs"></div>
+  <div class="grid" id="dogs"></div>
 </div>
-
-<script>
-const dogs=[
-{name:"ბუჩო",img:"https://knews.ge/wp-content/uploads/41566242_317408125676440_5402583007372509184_n.jpg",story:"ბუჩო გადარჩენილია მძიმე პირობებიდან და ელოდება სიყვარულით სავსე ოჯახს."},
-{name:"ტუზი",img:"https://bm.ge/uploads/files/2025/08/18/288239/miusafari-tskhovelebi_w_h.jpeg",story:"ტუზი აქტიური და მეგობრული ძაღლია."},
-{name:"ჯეკი",img:"https://publika.ge/app/uploads/2024/08/publika.ge-456412489-848930607336002-5837164432617329891-n-1024x695.jpg",story:"ჯეკი მშვიდი და ერთგული ძაღლია."},
-{name:"ლორდი",img:"https://tse4.mm.bing.net/th/id/OIP.h6bUC5UaMEfLV9UZXq1c1AHaJ4?pid=Api",story:"ლორდი ძლიერი და კეთილი ბუნების ძაღლია."},
-{name:"ანი და ლეო",img:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilTJXvqN5xluBOQT0EloJzN2EVZ0j1c3uCVhyphenhyphenKhH_86-DGJINB2nkFOLabQqXLVTPIhUtYo1BkwZzkMQqVcZ3oo-U0y7QouE9Pg66nqo3IBEDYgtxCsKjC6tsVm7JbmN-oHikC3eJkBVo/s1600/d5710fd04d9b.jpg",story:"ანი და ლეო პატარა ლეკვები არიან."}
-];
-
-const container=document.getElementById("dogs");
-
-dogs.forEach(d=>{
-const el=document.createElement("div");
-el.className="dog";
-el.innerHTML=`
-<img src="${d.img}">
-<div class="dog-content">
-<h3>${d.name}</h3>
-<div class="story-text">${d.story}</div>
-<div class="btn" onclick="openForm('${d.name}')">აიყვანე</div>
-</div>`;
-container.appendChild(el);
-});
-
-function openForm(name){
-document.getElementById("modal").style.display="flex";
-document.getElementById("dogName").value=name;
-}
-
-function closeModal(){
-document.getElementById("modal").style.display="none";
-}
-
-function sendForm(){
-document.getElementById("modal").style.display="none";
-document.getElementById("successBox").style.display="flex";
-}
-
-// CLICK OUTSIDE CLOSE
-window.onclick=function(e){
-const modal=document.getElementById("modal");
-if(e.target===modal){
-modal.style.display="none";
-}
-}
-</script>
 
 <div class="modal" id="modal">
-<div class="modal-content">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
 
-<span class="close" onclick="closeModal()">&times;</span>
-
-<h3>ცხოველის აყვანა</h3>
-<input id="dogName" readonly>
-<input placeholder="სახელი">
-<input placeholder="გვარი">
-<input placeholder="ქალაქი">
-<input placeholder="ქუჩა">
-<input placeholder="ტელეფონი">
-<button onclick="sendForm()">გაგზავნა</button>
-
-</div>
+    <h3 style="margin-bottom:12px">ცხოველის აყვანა</h3>
+    <input id="dogName" readonly>
+    <input id="firstName" placeholder="სახელი">
+    <input id="lastName" placeholder="გვარი">
+    <input id="city" placeholder="ქალაქი">
+    <input id="street" placeholder="ქუჩა">
+    <input id="phone" placeholder="ტელეფონი">
+    <button type="button" onclick="sendForm()">გაგზავნა</button>
+  </div>
 </div>
 
 <div class="success-box" id="successBox">
-<div class="success-content">
-<h2>✅ წარმატებით გაიგზავნა</h2>
+  <div class="success-content">
+    <h2>✅ წარმატებით გაიგზავნა</h2>
+    <p id="successText" style="margin-top:10px;color:#444"></p>
+  </div>
 </div>
+
+<div id="donation" style="background:#111;color:white;padding:60px 20px;margin-top:60px">
+  <div style="max-width:900px;margin:auto;text-align:center">
+    <h2 style="margin-bottom:20px">💳 მხარდაჭერა საბანკო გადარიცხვით</h2>
+    <p style="opacity:.8;margin-bottom:25px">თითოეული ლარი მნიშვნელოვანია.</p>
+
+    <div style="background:#1f1f1f;padding:20px;border-radius:16px;margin-bottom:15px">
+      <h3>🏦 საქართველოს ბანკი</h3>
+      <p style="font-size:18px;font-weight:bold">GE61BG0000000611213396</p>
+    </div>
+
+    <div style="background:#1f1f1f;padding:20px;border-radius:16px">
+      <h3>🏦 TBC ბანკი</h3>
+      <p style="font-size:18px;font-weight:bold">GE14TB7768945064300046</p>
+    </div>
+  </div>
 </div>
+
+<script>
+const dogs = [
+  {
+    name:"ბუჩო",
+    img:"https://knews.ge/wp-content/uploads/41566242_317408125676440_5402583007372509184_n.jpg",
+    story:"ბუჩო გადარჩენილია მძიმე პირობებიდან და ელოდება სიყვარულით სავსე ოჯახს."
+  },
+  {
+    name:"ტუზი",
+    img:"https://bm.ge/uploads/files/2025/08/18/288239/miusafari-tskhovelebi_w_h.jpeg",
+    story:"ტუზი აქტიური და მეგობრული ძაღლია."
+  },
+  {
+    name:"ჯეკი",
+    img:"https://publika.ge/app/uploads/2024/08/publika.ge-456412489-848930607336002-5837164432617329891-n-1024x695.jpg",
+    story:"ჯეკი მშვიდი და ერთგული ძაღლია."
+  },
+  {
+    name:"ლორდი",
+    img:"https://tse4.mm.bing.net/th/id/OIP.h6bUC5UaMEfLV9UZXq1c1AHaJ4?pid=Api",
+    story:"ლორდი ძლიერი და კეთილი ბუნების ძაღლია."
+  },
+  {
+    name:"ანი და ლეო",
+    img:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilTJXvqN5xluBOQT0EloJzN2EVZ0j1c3uCVhyphenhyphenKhH_86-DGJINB2nkFOLabQqXLVTPIhUtYo1BkwZzkMQqVcZ3oo-U0y7QouE9Pg66nqo3IBEDYgtxCsKjC6tsVm7JbmN-oHikC3eJkBVo/s1600/d5710fd04d9b.jpg",
+    story:"ანი და ლეო პატარა ლეკვები არიან."
+  }
+];
+
+const container = document.getElementById("dogs");
+const adoptedDogs = new Set();
+let currentDogIndex = null;
+
+dogs.forEach((d, index) => {
+  const el = document.createElement("div");
+  el.className = "dog";
+  el.innerHTML = `
+    <img src="${d.img}" alt="${d.name}">
+    <div class="dog-content">
+      <h3>${d.name}</h3>
+      <div class="story-text">${d.story}</div>
+      <div class="btn" id="adoptBtn-${index}" onclick="openForm(${index})">აიყვანე</div>
+    </div>
+  `;
+  container.appendChild(el);
+});
+
+function openForm(index){
+  if(adoptedDogs.has(index)) return;
+
+  currentDogIndex = index;
+  document.getElementById("modal").style.display = "flex";
+  document.getElementById("dogName").value = dogs[index].name;
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display = "none";
+}
+
+function sendForm(){
+  const inputs = [
+    document.getElementById("firstName"),
+    document.getElementById("lastName"),
+    document.getElementById("city"),
+    document.getElementById("street"),
+    document.getElementById("phone")
+  ];
+
+  let valid = true;
+
+  inputs.forEach(input => {
+    if(!input.value.trim()){
+      input.style.border = "2px solid red";
+      valid = false;
+    } else {
+      input.style.border = "1px solid #ddd";
+    }
+  });
+
+  if(!valid) return;
+
+  document.getElementById("modal").style.display = "none";
+
+  if(currentDogIndex !== null){
+    adoptedDogs.add(currentDogIndex);
+
+    const btn = document.getElementById(`adoptBtn-${currentDogIndex}`);
+    btn.textContent = "უკვე აყვანილია";
+    btn.classList.add("disabled");
+    btn.removeAttribute("onclick");
+  }
+
+  const queue = Math.floor(Math.random() * 500) + 50;
+  document.getElementById("successText").innerText = "რიგის ნომერი: #" + queue;
+  document.getElementById("successBox").style.display = "flex";
+
+  setTimeout(() => {
+    document.getElementById("successBox").style.display = "none";
+  }, 10000);
+
+  document.getElementById("firstName").value = "";
+  document.getElementById("lastName").value = "";
+  document.getElementById("city").value = "";
+  document.getElementById("street").value = "";
+  document.getElementById("phone").value = "";
+
+  currentDogIndex = null;
+}
+
+window.onclick = function(e){
+  const modal = document.getElementById("modal");
+  if(e.target === modal){
+    modal.style.display = "none";
+  }
+}
+</script>
 
 </body>
 </html>
