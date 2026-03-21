@@ -214,29 +214,29 @@ header p{margin-top:10px;color:#666}
 <script>
 const dogs = [
   {
-    name:"ბუჩო",
-    img:"https://knews.ge/wp-content/uploads/41566242_317408125676440_5402583007372509184_n.jpg",
-    story:"ბუჩო გადარჩენილია მძიმე პირობებიდან და ელოდება სიყვარულით სავსე ოჯახს."
+    name:"ბონი",
+    img:"https://www.shutterstock.com/shutterstock/videos/1027680257/thumb/1.jpg?ip=x480",
+    story:"ბონი არის პატარა და ძალიან თბილი ლეკვი, რომელსაც მშვიდი და მზრუნველი ოჯახი სჭირდება."
   },
   {
-    name:"ტუზი",
-    img:"https://bm.ge/uploads/files/2025/08/18/288239/miusafari-tskhovelebi_w_h.jpeg",
-    story:"ტუზი აქტიური და მეგობრული ძაღლია."
+    name:"ტობი",
+    img:"https://media.istockphoto.com/id/527119077/photo/young-pupp.jpg?s=612x612&w=0&k=20&c=V4wjAvq-MpBbi-it9AD1ffhm4hbL7-sJMda2Kscm2GY=",
+    story:"ტობი მეგობრული და ცელქი პატარა ლეკვია, რომელიც ყურადღებას და სიყვარულს ელოდება."
   },
   {
-    name:"ჯეკი",
-    img:"https://publika.ge/app/uploads/2024/08/publika.ge-456412489-848930607336002-5837164432617329891-n-1024x695.jpg",
-    story:"ჯეკი მშვიდი და ერთგული ძაღლია."
+    name:"ლუსი",
+    img:"https://media.istockphoto.com/id/1408330223/photo/photo-of-cute-mongrel-puppies-on-the-street.jpg?s=170667a&w=0&k=20&c=nxC4xht892hIT3PPC6Ra56A_Z8Cvd1qDZSyfZKs7b5k=",
+    story:"ლუსი ძალიან საყვარელი ქუჩის ლეკვია, რომელსაც უსაფრთხო გარემო და მზრუნველი პატრონი სჭირდება."
   },
   {
-    name:"ლორდი",
-    img:"https://tse4.mm.bing.net/th/id/OIP.h6bUC5UaMEfLV9UZXq1c1AHaJ4?pid=Api",
-    story:"ლორდი ძლიერი და კეთილი ბუნების ძაღლია."
+    name:"ჩარლი",
+    img:"https://cdn.pixabay.com/photo/2019/04/08/23/39/dog-4113323_640.jpg",
+    story:"ჩარლი ენერგიული და კეთილი ძაღლია, რომელიც სიარულსა და ადამიანებთან ყოფნას ძალიან უყვარს."
   },
   {
-    name:"ანი და ლეო",
-    img:"https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEilTJXvqN5xluBOQT0EloJzN2EVZ0j1c3uCVhyphenhyphenKhH_86-DGJINB2nkFOLabQqXLVTPIhUtYo1BkwZzkMQqVcZ3oo-U0y7QouE9Pg66nqo3IBEDYgtxCsKjC6tsVm7JbmN-oHikC3eJkBVo/s1600/d5710fd04d9b.jpg",
-    story:"ანი და ლეო პატარა ლეკვები არიან."
+    name:"მოლი",
+    img:"https://johnnyholland.org/wp-content/uploads/2023/04/photo-1661152900445-e67ccd781141-1024x683.jpg",
+    story:"მოლი წყნარი და ერთგული მეგობარია, რომელიც ახალ სახლში სითბოსა და სიმშვიდეს შეიტანს."
   }
 ];
 
@@ -348,6 +348,26 @@ function showMessage(type, title, text){
 function openForm(index){
   if(adoptedDogs.has(index)) return;
 
+  const browserLock = getBrowserLock();
+  const now = Date.now();
+
+  if(browserLock && (now - browserLock.firstSentAt) < BLOCK_MS){
+    const remainingMs = BLOCK_MS - (now - browserLock.firstSentAt);
+
+    showMessage(
+      "warning",
+      "🚫 მოთხოვნა დროებით შეზღუდულია",
+      `თქვენ უკვე გააკეთეთ მოთხოვნა ცხოველზე: <strong>${browserLock.requestedDogName || "უცნობია"}</strong>.<br><br>
+       24 საათის განმავლობაში ახალ მოთხოვნას ვერ გააკეთებთ.<br>
+       ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
+    );
+    return;
+  }
+
+  if(browserLock && (now - browserLock.firstSentAt) >= BLOCK_MS){
+    clearBrowserLock();
+  }
+
   currentDogIndex = index;
   document.getElementById("modal").style.display = "flex";
   document.getElementById("dogName").value = dogs[index].name;
@@ -407,12 +427,9 @@ function sendForm(){
 
     showMessage(
       "warning",
-      "🚫 განმეორებითი მოთხოვნა დაიბლოკა",
-      `ამ ბრაუზერიდან უკვე გაგზავნილია მოთხოვნა და სისტემამ ეს მოწყობილობა უკვე ამოიცნო.<br><br>
-       ამიტომ სხვა მობილურის ნომრის მითითებაც ვერ გაგატარებთ.<br><br>
-       ბოლო აქტიური მოთხოვნა დაფიქსირდა ცხოველზე: <strong>${browserLock.requestedDogName || browserLock.lastDogName || "უცნობია"}</strong>.<br>
-       გამოყენებული ნომერი: <strong>${browserLock.phone || "დაფიქსირებულია"}</strong>.<br><br>
-       უსაფრთხოების მიზნით, ამავე ბრაუზერიდან <strong>${BLOCK_HOURS} საათის განმავლობაში</strong> ახალი მოთხოვნის გაგზავნა შეუძლებელია.<br>
+      "🚫 მოთხოვნა უკვე გაკეთებულია",
+      `თქვენ უკვე გააკეთეთ მოთხოვნა ცხოველზე: <strong>${browserLock.requestedDogName || browserLock.lastDogName || "უცნობია"}</strong>.<br><br>
+       24 საათის განმავლობაში ახალ მოთხოვნას ვერ გააკეთებთ.<br>
        ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
     );
     return;
@@ -436,9 +453,8 @@ function sendForm(){
     showMessage(
       "warning",
       "🚫 მოთხოვნა უკვე დაფიქსირებულია",
-      `ამავე მობილურის ნომრიდან მოთხოვნა უკვე დაფიქსირდა <strong>${existingEntry.attempts}</strong>-ჯერ.<br><br>
-       ბოლო აქტიური მოთხოვნა გაგზავნილია ცხოველზე: <strong>${existingEntry.requestedDogName || existingEntry.lastDogName || "უცნობია"}</strong>.<br><br>
-       უსაფრთხოების მიზნით, ერთი და იგივე ნომრიდან <strong>${BLOCK_HOURS} საათის განმავლობაში</strong> ახალ ცხოველზე მოთხოვნის გაგზავნა შეზღუდულია.<br>
+      `თქვენ უკვე გააკეთეთ მოთხოვნა ცხოველზე: <strong>${existingEntry.requestedDogName || existingEntry.lastDogName || "უცნობია"}</strong>.<br><br>
+       24 საათის განმავლობაში ახალ მოთხოვნას ვერ გააკეთებთ.<br>
        ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
     );
     return;
@@ -476,7 +492,7 @@ function sendForm(){
     "✅ წარმატებით გაიგზავნა",
     `თქვენი მოთხოვნა მიღებულია ცხოველზე: <strong>${currentDogName}</strong>.<br>
      რიგის ნომერი: <strong>#${queue}</strong>.<br><br>
-     გთხოვთ გაითვალისწინოთ: ამავე ბრაუზერიდან ან ამავე მობილურის ნომრიდან შემდეგი მოთხოვნის გაგზავნა შესაძლებელი იქნება მხოლოდ <strong>${BLOCK_HOURS} საათის</strong> შემდეგ.`
+     გთხოვთ გაითვალისწინოთ: შემდეგი მოთხოვნის გაგზავნა შესაძლებელი იქნება მხოლოდ <strong>${BLOCK_HOURS} საათის</strong> შემდეგ.`
   );
 
   dogNameInput.value = "";
