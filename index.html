@@ -84,7 +84,7 @@ header p{margin-top:10px;color:#666}
   padding:25px;
   border-radius:20px;
   width:100%;
-  max-width:360px;
+  max-width:380px;
   text-align:center;
   animation:pop .3s ease;
   position:relative;
@@ -122,7 +122,7 @@ header p{margin-top:10px;color:#666}
 .success-content p{
   margin-top:10px;
   color:#444;
-  line-height:1.65;
+  line-height:1.7;
   font-size:15px;
 }
 
@@ -175,7 +175,6 @@ header p{margin-top:10px;color:#666}
 <div class="modal" id="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal()">&times;</span>
-
     <h3 style="margin-bottom:12px">ცხოველის აყვანა</h3>
     <input id="dogName" readonly>
     <input id="firstName" placeholder="სახელი">
@@ -241,7 +240,6 @@ const dogs = [
 ];
 
 const container = document.getElementById("dogs");
-const adoptedDogs = new Set();
 let currentDogIndex = null;
 
 const REQUEST_STORE_KEY = "shelter_request_store";
@@ -257,7 +255,7 @@ dogs.forEach((d, index) => {
     <div class="dog-content">
       <h3>${d.name}</h3>
       <div class="story-text">${d.story}</div>
-      <div class="btn" id="adoptBtn-${index}" onclick="openForm(${index})">აიყვანე</div>
+      <div class="btn" onclick="openForm(${index})">აიყვანე</div>
     </div>
   `;
   container.appendChild(el);
@@ -345,9 +343,16 @@ function showMessage(type, title, text){
   }, 10000);
 }
 
-function openForm(index){
-  if(adoptedDogs.has(index)) return;
+function buildBlockedText(lockData, remainingMs){
+  return `
+    თქვენ უკვე გაქვთ გაკეთებული მოთხოვნა ცხოველზე: <strong>${lockData.requestedDogName || "უცნობია"}</strong>.<br>
+    თქვენი რიგის ნომერია: <strong>#${lockData.queueNumber || "-"}</strong>.<br><br>
+    24 საათის განმავლობაში სხვა ცხოველზე ახალ მოთხოვნას ვერ გააკეთებთ.<br>
+    ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.
+  `;
+}
 
+function openForm(index){
   const browserLock = getBrowserLock();
   const now = Date.now();
 
@@ -356,10 +361,8 @@ function openForm(index){
 
     showMessage(
       "warning",
-      "🚫 მოთხოვნა დროებით შეზღუდულია",
-      `თქვენ უკვე გააკეთეთ მოთხოვნა ცხოველზე: <strong>${browserLock.requestedDogName || "უცნობია"}</strong>.<br><br>
-       24 საათის განმავლობაში ახალ მოთხოვნას ვერ გააკეთებთ.<br>
-       ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
+      "🚫 მოთხოვნა უკვე გაკეთებულია",
+      buildBlockedText(browserLock, remainingMs)
     );
     return;
   }
@@ -418,20 +421,13 @@ function sendForm(){
 
   if(browserLock && (now - browserLock.firstSentAt) < BLOCK_MS){
     const remainingMs = BLOCK_MS - (now - browserLock.firstSentAt);
-    browserLock.attempts = (browserLock.attempts || 1) + 1;
-    browserLock.lastAttemptAt = now;
-    browserLock.lastDogName = currentDogName;
-    saveBrowserLock(browserLock);
-
-    closeModal();
 
     showMessage(
       "warning",
       "🚫 მოთხოვნა უკვე გაკეთებულია",
-      `თქვენ უკვე გააკეთეთ მოთხოვნა ცხოველზე: <strong>${browserLock.requestedDogName || browserLock.lastDogName || "უცნობია"}</strong>.<br><br>
-       24 საათის განმავლობაში ახალ მოთხოვნას ვერ გააკეთებთ.<br>
-       ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
+      buildBlockedText(browserLock, remainingMs)
     );
+    closeModal();
     return;
   }
 
@@ -443,56 +439,39 @@ function sendForm(){
 
   if(existingEntry && (now - existingEntry.firstSentAt) < BLOCK_MS){
     const remainingMs = BLOCK_MS - (now - existingEntry.firstSentAt);
-    existingEntry.attempts = (existingEntry.attempts || 1) + 1;
-    existingEntry.lastAttemptAt = now;
-    existingEntry.lastDogName = currentDogName;
-    saveRequestStore(store);
-
-    closeModal();
 
     showMessage(
       "warning",
-      "🚫 მოთხოვნა უკვე დაფიქსირებულია",
-      `თქვენ უკვე გააკეთეთ მოთხოვნა ცხოველზე: <strong>${existingEntry.requestedDogName || existingEntry.lastDogName || "უცნობია"}</strong>.<br><br>
-       24 საათის განმავლობაში ახალ მოთხოვნას ვერ გააკეთებთ.<br>
-       ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
+      "🚫 მოთხოვნა უკვე გაკეთებულია",
+      buildBlockedText(existingEntry, remainingMs)
     );
+    closeModal();
     return;
   }
 
-  store[normalizedPhone] = {
-    firstSentAt: now,
-    lastAttemptAt: now,
-    attempts: 1,
-    requestedDogName: currentDogName,
-    applicantName: `${firstName.value.trim()} ${lastName.value.trim()}`.trim()
-  };
-  saveRequestStore(store);
+  const queue = Math.floor(Math.random() * 81) + 10;
 
-  saveBrowserLock({
+  const savedRequest = {
     firstSentAt: now,
     lastAttemptAt: now,
-    attempts: 1,
     requestedDogName: currentDogName,
     applicantName: `${firstName.value.trim()} ${lastName.value.trim()}`.trim(),
-    phone: normalizedPhone
-  });
+    phone: normalizedPhone,
+    queueNumber: queue
+  };
 
-  document.getElementById("modal").style.display = "none";
+  store[normalizedPhone] = savedRequest;
+  saveRequestStore(store);
+  saveBrowserLock(savedRequest);
 
-  if(currentDogIndex !== null){
-    adoptedDogs.add(currentDogIndex);
-    const btn = document.getElementById(`adoptBtn-${currentDogIndex}`);
-    if(btn) btn.style.display = "none";
-  }
+  closeModal();
 
-  const queue = Math.floor(Math.random() * 81) + 10;
   showMessage(
     "success",
     "✅ წარმატებით გაიგზავნა",
-    `თქვენი მოთხოვნა მიღებულია ცხოველზე: <strong>${currentDogName}</strong>.<br>
-     რიგის ნომერი: <strong>#${queue}</strong>.<br><br>
-     გთხოვთ გაითვალისწინოთ: შემდეგი მოთხოვნის გაგზავნა შესაძლებელი იქნება მხოლოდ <strong>${BLOCK_HOURS} საათის</strong> შემდეგ.`
+    `თქვენი მოთხოვნა მიღებულია ცხოველზე: <strong>${savedRequest.requestedDogName}</strong>.<br>
+     თქვენი რიგის ნომერია: <strong>#${savedRequest.queueNumber}</strong>.<br><br>
+     შემდეგი მოთხოვნის გაკეთება შესაძლებელი იქნება მხოლოდ <strong>${BLOCK_HOURS} საათის</strong> შემდეგ.`
   );
 
   dogNameInput.value = "";
