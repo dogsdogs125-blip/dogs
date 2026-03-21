@@ -76,16 +76,19 @@ header p{margin-top:10px;color:#666}
   justify-content:center;
   align-items:center;
   z-index:999;
+  padding:18px;
 }
 
 .modal-content,.success-content{
   background:white;
   padding:25px;
   border-radius:20px;
-  width:320px;
+  width:100%;
+  max-width:360px;
   text-align:center;
   animation:pop .3s ease;
   position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.18);
 }
 
 .modal-content input{
@@ -109,7 +112,19 @@ header p{margin-top:10px;color:#666}
   cursor:pointer;
 }
 
-.success-content h2{color:#16a34a}
+.success-content.success-state{
+  border-top:6px solid #16a34a;
+}
+.success-content.warning-state{
+  border-top:6px solid #dc2626;
+}
+.success-content h2{margin-bottom:10px}
+.success-content p{
+  margin-top:10px;
+  color:#444;
+  line-height:1.65;
+  font-size:15px;
+}
 
 .close{
   position:absolute;
@@ -173,9 +188,9 @@ header p{margin-top:10px;color:#666}
 </div>
 
 <div class="success-box" id="successBox">
-  <div class="success-content">
-    <h2>✅ წარმატებით გაიგზავნა</h2>
-    <p id="successText" style="margin-top:10px;color:#444"></p>
+  <div class="success-content success-state" id="successContent">
+    <h2 id="messageTitle">✅ წარმატებით გაიგზავნა</h2>
+    <p id="successText"></p>
   </div>
 </div>
 
@@ -229,6 +244,11 @@ const container = document.getElementById("dogs");
 const adoptedDogs = new Set();
 let currentDogIndex = null;
 
+const REQUEST_STORE_KEY = "shelter_request_store";
+const BROWSER_LOCK_KEY = "shelter_browser_request_lock";
+const BLOCK_HOURS = 24;
+const BLOCK_MS = BLOCK_HOURS * 60 * 60 * 1000;
+
 dogs.forEach((d, index) => {
   const el = document.createElement("div");
   el.className = "dog";
@@ -243,6 +263,88 @@ dogs.forEach((d, index) => {
   container.appendChild(el);
 });
 
+function setCookie(name, value, days = 30){
+  const expires = new Date(Date.now() + days * 86400000).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
+function getCookie(name){
+  const parts = document.cookie.split("; ").find(row => row.startsWith(name + "="));
+  return parts ? decodeURIComponent(parts.split("=")[1]) : "";
+}
+
+function getRequestStore(){
+  try{
+    const localData = localStorage.getItem(REQUEST_STORE_KEY);
+    if(localData) return JSON.parse(localData);
+
+    const cookieData = getCookie(REQUEST_STORE_KEY);
+    if(cookieData) return JSON.parse(cookieData);
+  }catch(e){}
+  return {};
+}
+
+function saveRequestStore(store){
+  const value = JSON.stringify(store);
+  localStorage.setItem(REQUEST_STORE_KEY, value);
+  setCookie(REQUEST_STORE_KEY, value, 30);
+}
+
+function getBrowserLock(){
+  try{
+    const localData = localStorage.getItem(BROWSER_LOCK_KEY);
+    if(localData) return JSON.parse(localData);
+
+    const cookieData = getCookie(BROWSER_LOCK_KEY);
+    if(cookieData) return JSON.parse(cookieData);
+  }catch(e){}
+  return null;
+}
+
+function saveBrowserLock(lockData){
+  const value = JSON.stringify(lockData);
+  localStorage.setItem(BROWSER_LOCK_KEY, value);
+  setCookie(BROWSER_LOCK_KEY, value, 30);
+}
+
+function clearBrowserLock(){
+  localStorage.removeItem(BROWSER_LOCK_KEY);
+  document.cookie = `${BROWSER_LOCK_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+}
+
+function normalizePhone(phone){
+  return phone.replace(/[^\d+]/g, "").trim();
+}
+
+function formatTimeLeft(ms){
+  const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if(hours <= 0) return `${minutes} წუთი`;
+  if(minutes === 0) return `${hours} საათი`;
+  return `${hours} საათი და ${minutes} წუთი`;
+}
+
+function showMessage(type, title, text){
+  const box = document.getElementById("successBox");
+  const content = document.getElementById("successContent");
+  const titleEl = document.getElementById("messageTitle");
+  const textEl = document.getElementById("successText");
+
+  content.classList.remove("success-state", "warning-state");
+  content.classList.add(type === "warning" ? "warning-state" : "success-state");
+
+  titleEl.textContent = title;
+  textEl.innerHTML = text;
+  box.style.display = "flex";
+
+  clearTimeout(window.__messageTimeout);
+  window.__messageTimeout = setTimeout(() => {
+    box.style.display = "none";
+  }, 10000);
+}
+
 function openForm(index){
   if(adoptedDogs.has(index)) return;
 
@@ -256,14 +358,14 @@ function closeModal(){
 }
 
 function sendForm(){
-  const inputs = [
-    document.getElementById("firstName"),
-    document.getElementById("lastName"),
-    document.getElementById("city"),
-    document.getElementById("street"),
-    document.getElementById("phone")
-  ];
+  const dogNameInput = document.getElementById("dogName");
+  const firstName = document.getElementById("firstName");
+  const lastName = document.getElementById("lastName");
+  const city = document.getElementById("city");
+  const street = document.getElementById("street");
+  const phone = document.getElementById("phone");
 
+  const inputs = [firstName, lastName, city, street, phone];
   let valid = true;
 
   inputs.forEach(input => {
@@ -277,36 +379,125 @@ function sendForm(){
 
   if(!valid) return;
 
+  const normalizedPhone = normalizePhone(phone.value);
+
+  if(normalizedPhone.length < 9){
+    phone.style.border = "2px solid red";
+    showMessage(
+      "warning",
+      "⚠️ ტელეფონის ნომერი არასწორია",
+      "გთხოვთ, შეიყვანოთ სწორი მობილურის ნომერი."
+    );
+    return;
+  }
+
+  const store = getRequestStore();
+  const now = Date.now();
+  const currentDogName = dogs[currentDogIndex].name;
+  const browserLock = getBrowserLock();
+
+  if(browserLock && (now - browserLock.firstSentAt) < BLOCK_MS){
+    const remainingMs = BLOCK_MS - (now - browserLock.firstSentAt);
+    browserLock.attempts = (browserLock.attempts || 1) + 1;
+    browserLock.lastAttemptAt = now;
+    browserLock.lastDogName = currentDogName;
+    saveBrowserLock(browserLock);
+
+    closeModal();
+
+    showMessage(
+      "warning",
+      "🚫 განმეორებითი მოთხოვნა დაიბლოკა",
+      `ამ ბრაუზერიდან უკვე გაგზავნილია მოთხოვნა და სისტემამ ეს მოწყობილობა უკვე ამოიცნო.<br><br>
+       ამიტომ სხვა მობილურის ნომრის მითითებაც ვერ გაგატარებთ.<br><br>
+       ბოლო აქტიური მოთხოვნა დაფიქსირდა ცხოველზე: <strong>${browserLock.requestedDogName || browserLock.lastDogName || "უცნობია"}</strong>.<br>
+       გამოყენებული ნომერი: <strong>${browserLock.phone || "დაფიქსირებულია"}</strong>.<br><br>
+       უსაფრთხოების მიზნით, ამავე ბრაუზერიდან <strong>${BLOCK_HOURS} საათის განმავლობაში</strong> ახალი მოთხოვნის გაგზავნა შეუძლებელია.<br>
+       ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
+    );
+    return;
+  }
+
+  if(browserLock && (now - browserLock.firstSentAt) >= BLOCK_MS){
+    clearBrowserLock();
+  }
+
+  const existingEntry = store[normalizedPhone];
+
+  if(existingEntry && (now - existingEntry.firstSentAt) < BLOCK_MS){
+    const remainingMs = BLOCK_MS - (now - existingEntry.firstSentAt);
+    existingEntry.attempts = (existingEntry.attempts || 1) + 1;
+    existingEntry.lastAttemptAt = now;
+    existingEntry.lastDogName = currentDogName;
+    saveRequestStore(store);
+
+    closeModal();
+
+    showMessage(
+      "warning",
+      "🚫 მოთხოვნა უკვე დაფიქსირებულია",
+      `ამავე მობილურის ნომრიდან მოთხოვნა უკვე დაფიქსირდა <strong>${existingEntry.attempts}</strong>-ჯერ.<br><br>
+       ბოლო აქტიური მოთხოვნა გაგზავნილია ცხოველზე: <strong>${existingEntry.requestedDogName || existingEntry.lastDogName || "უცნობია"}</strong>.<br><br>
+       უსაფრთხოების მიზნით, ერთი და იგივე ნომრიდან <strong>${BLOCK_HOURS} საათის განმავლობაში</strong> ახალ ცხოველზე მოთხოვნის გაგზავნა შეზღუდულია.<br>
+       ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.`
+    );
+    return;
+  }
+
+  store[normalizedPhone] = {
+    firstSentAt: now,
+    lastAttemptAt: now,
+    attempts: 1,
+    requestedDogName: currentDogName,
+    applicantName: `${firstName.value.trim()} ${lastName.value.trim()}`.trim()
+  };
+  saveRequestStore(store);
+
+  saveBrowserLock({
+    firstSentAt: now,
+    lastAttemptAt: now,
+    attempts: 1,
+    requestedDogName: currentDogName,
+    applicantName: `${firstName.value.trim()} ${lastName.value.trim()}`.trim(),
+    phone: normalizedPhone
+  });
+
   document.getElementById("modal").style.display = "none";
 
   if(currentDogIndex !== null){
     adoptedDogs.add(currentDogIndex);
-
     const btn = document.getElementById(`adoptBtn-${currentDogIndex}`);
-    btn.style.display = "none";
+    if(btn) btn.style.display = "none";
   }
 
-  const queue = Math.floor(Math.random() * 500) + 50;
-  document.getElementById("successText").innerText = "რიგის ნომერი: #" + queue;
-  document.getElementById("successBox").style.display = "flex";
+  const queue = Math.floor(Math.random() * 81) + 10;
+  showMessage(
+    "success",
+    "✅ წარმატებით გაიგზავნა",
+    `თქვენი მოთხოვნა მიღებულია ცხოველზე: <strong>${currentDogName}</strong>.<br>
+     რიგის ნომერი: <strong>#${queue}</strong>.<br><br>
+     გთხოვთ გაითვალისწინოთ: ამავე ბრაუზერიდან ან ამავე მობილურის ნომრიდან შემდეგი მოთხოვნის გაგზავნა შესაძლებელი იქნება მხოლოდ <strong>${BLOCK_HOURS} საათის</strong> შემდეგ.`
+  );
 
-  setTimeout(() => {
-    document.getElementById("successBox").style.display = "none";
-  }, 10000);
-
-  document.getElementById("firstName").value = "";
-  document.getElementById("lastName").value = "";
-  document.getElementById("city").value = "";
-  document.getElementById("street").value = "";
-  document.getElementById("phone").value = "";
-
+  dogNameInput.value = "";
+  firstName.value = "";
+  lastName.value = "";
+  city.value = "";
+  street.value = "";
+  phone.value = "";
   currentDogIndex = null;
 }
 
 window.onclick = function(e){
   const modal = document.getElementById("modal");
+  const box = document.getElementById("successBox");
+
   if(e.target === modal){
     modal.style.display = "none";
+  }
+
+  if(e.target === box){
+    box.style.display = "none";
   }
 }
 </script>
