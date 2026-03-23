@@ -1,501 +1,317 @@
 <!DOCTYPE html>
-<html lang="ka">
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ცხოველთა თავშესაფარი</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Для тебя</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #fff7fb 0%, #fff 45%, #f8f5ff 100%);
+      color: #222;
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .hero-box {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 28px;
+      padding: 42px 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+    h1 {
+      font-size: clamp(34px, 6vw, 64px);
+      margin-bottom: 16px;
+      color: #1e1e1e;
+    }
+    .subtitle {
+      max-width: 760px;
+      margin: 0 auto 22px;
+      font-size: 18px;
+      color: #555;
+    }
+    .heart {
+      font-size: 34px;
+      margin-bottom: 14px;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: #111;
+      color: #fff;
+      text-decoration: none;
+      transition: 0.25s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:#f8fafc;color:#111}
+    section {
+      padding: 80px 0;
+    }
+    .section-title {
+      font-size: 32px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .section-subtitle {
+      color: #666;
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 36px;
+    }
 
-header{
-  padding:60px 20px;
-  text-align:center;
-  background:white;
-  border-bottom:1px solid #eee;
-}
-h1{font-size:36px;font-weight:700}
-header p{margin-top:10px;color:#666}
+    .story-card, .note-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
 
-.container{max-width:1200px;margin:auto;padding:40px 20px}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:40px;
-}
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .photo {
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.07);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .photo img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+      background: #ececec;
+    }
+    .photo p {
+      padding: 14px;
+      font-size: 15px;
+      color: #555;
+    }
 
-.dog{
-  background:white;
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 15px 35px rgba(0,0,0,0.08);
-  transition:.3s;
-}
-.dog:hover{
-  transform:translateY(-8px);
-  box-shadow:0 25px 60px rgba(0,0,0,0.15);
-}
-.dog img{
-  width:100%;
-  height:420px;
-  object-fit:cover;
-}
-.dog-content{padding:25px}
-.dog h3{font-size:22px;margin-bottom:10px}
-.story-text{
-  font-size:15px;
-  line-height:1.6;
-  color:#444;
-  margin-bottom:15px;
-}
+    .timeline {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .timeline-item {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      border-left: 5px solid #111;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.05);
+    }
+    .timeline-item h3 {
+      margin-bottom: 6px;
+      font-size: 20px;
+    }
+    .timeline-item p {
+      color: #555;
+    }
 
-.btn{
-  display:block;
-  text-align:center;
-  padding:14px;
-  border-radius:14px;
-  background:#111;
-  color:white;
-  font-weight:600;
-  cursor:pointer;
-  transition:.2s;
-  user-select:none;
-}
-.btn:hover{background:#333}
+    .note-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .mini-note {
+      background: linear-gradient(180deg, #ffffff, #fff8fd);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+    }
+    .mini-note h4 {
+      margin-bottom: 8px;
+      font-size: 19px;
+    }
+    .mini-note p {
+      color: #5b5b5b;
+      font-size: 15px;
+    }
 
-.modal,.success-box{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
-  padding:18px;
-}
+    footer {
+      padding: 40px 20px 60px;
+      text-align: center;
+      color: #666;
+    }
 
-.modal-content,.success-content{
-  background:white;
-  padding:25px;
-  border-radius:20px;
-  width:100%;
-  max-width:380px;
-  text-align:center;
-  animation:pop .3s ease;
-  position:relative;
-  box-shadow:0 20px 60px rgba(0,0,0,0.18);
-}
-
-.modal-content input{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  border-radius:10px;
-  border:1px solid #ddd;
-  outline:none;
-}
-
-.modal-content button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  margin-top:10px;
-  background:#111;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.success-content.success-state{
-  border-top:6px solid #16a34a;
-}
-.success-content.warning-state{
-  border-top:6px solid #dc2626;
-}
-.success-content h2{margin-bottom:10px}
-.success-content p{
-  margin-top:10px;
-  color:#444;
-  line-height:1.7;
-  font-size:15px;
-}
-
-.close{
-  position:absolute;
-  top:10px;
-  right:15px;
-  font-size:28px;
-  cursor:pointer;
-  color:#555;
-}
-.close:hover{color:#000}
-
-@keyframes pop{
-  0%{transform:scale(.8);opacity:0}
-  100%{transform:scale(1);opacity:1}
-}
-
-@media(max-width:600px){
-  .dog img{height:260px}
-  .grid{gap:25px}
-}
-</style>
+    @media (max-width: 700px) {
+      .hero-box { padding: 30px 18px; }
+      .story-card, .note-card { padding: 22px 18px; }
+      .photo img { height: 240px; }
+    }
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-box">
+        <div class="heart">❤</div>
+        <h1>Есть люди, которых время не стирает</h1>
+        <p class="subtitle">
+          Последнее время я всё чаще вспоминаю нас: как мы проводили время вместе, как нам было легко,
+          тепло и хорошо рядом. Многое в жизни изменилось, но эти моменты для меня так и остались живыми.
+        </p>
+        <a class="btn" href="#story">Прочитай мою историю</a>
+      </div>
+    </section>
 
-<header>
-  <h1>🐾 თავშესაფარი</h1>
-  <p>იპოვე შენი ახალი მეგობარი</p>
+    <section id="photos">
+      <h2 class="section-title">Наши моменты</h2>
+      <p class="section-subtitle">
+        Сюда вставь ваши лучшие фотографии. Просто замени пути в src на свои снимки.
+      </p>
+      <div class="gallery">
+        <div class="photo">
+          <img src="https://github.com/dogsdogs125-blip/dogs/blob/main/470f4853-f148-471d-a699-9cb274197b19.jpg?raw=true" alt="Наше фото 1" />
+          <p>Момент, который до сих пор вызывает у меня тёплую улыбку.</p>
+        </div>
+        <div class="photo">
+          <img src="https://github.com/dogsdogs125-blip/dogs/blob/main/5232d7c2-ed4e-453d-a1e9-5e1d19b80200.jpg?raw=true" alt="Наше фото 2" />
+          <p>Тот день, когда всё было по-настоящему легко и светло.</p>
+        </div>
+        <div class="photo">
+          <img src="https://github.com/dogsdogs125-blip/dogs/blob/main/579fcbea-e80b-4942-a8f1-805fbb1037bd.jpg?raw=true" alt="Наше фото 3" />
+          <p>Одна из тех секунд, которые время не смогло забрать.</p>
+        </div>
+        <div class="photo">
+          <img src="https://github.com/dogsdogs125-blip/dogs/blob/main/690312c3-8e2e-4691-a3f3-8f06adc55264.jpg?raw=true" alt="Наше фото 4" />
+          <p>Тихое напоминание о том, как хорошо может быть рядом с одним человеком.</p>
+        </div>
+        <div class="photo">
+          <img src="https://github.com/dogsdogs125-blip/dogs/blob/main/92b0e85b-a62d-41a9-bc40-d5e453f031ac.jpg?raw=true" alt="Наше фото 5" />
+          <p>Есть кадры, в которых остаётся больше, чем просто картинка.</p>
+        </div>
+        <div class="photo">
+          <img src="https://github.com/dogsdogs125-blip/dogs/blob/main/fc298db6-c930-4e17-93f7-541c8b8fbcd2.jpg?raw=true" alt="Наше фото 6" />
+          <p>Иногда одного взгляда на фото хватает, чтобы внутри снова стало тепло.</p>
+        </div>
+        <div class="photo">
+          <img src="https://github.com/dogsdogs125-blip/dogs/blob/main/fd6304e9-a166-4e83-963f-e5077c717ca3.jpg?raw=true" alt="Наше фото 7" />
+          <p>То, что было настоящим, всегда остаётся где-то глубоко в сердце.</p>
+        </div>
+      </div>
+    </section>
 
-  <div style="margin-top:35px;padding:35px;background:linear-gradient(135deg,#ffedd5,#fde68a);border-radius:20px;max-width:850px;margin-left:auto;margin-right:auto;box-shadow:0 20px 60px rgba(0,0,0,0.08)">
-    <h3 style="margin-bottom:18px;font-size:24px;font-weight:700;color:#7c2d12">
-      🙏 შეგიძლიათ დაეხმაროთ ახალი თავშესაფრების გახსნაში
-    </h3>
-    <p style="font-size:17px;line-height:1.7;color:#5b341f">
-      ამ ეტაპზე ძაღლები იმყოფებიან სახლის პირობებში დროებით. ჩვენ ვზრუნავთ მათზე ჩვენი შესაძლებლობების ფარგლებში, თუმცა გვჭირდება მხარდაჭერა.
-    </p>
-    <div style="margin-top:28px;text-align:center">
-      <a href="#donation" style="display:inline-block;padding:16px 40px;background:#7c2d12;color:white;font-weight:700;border-radius:14px;text-decoration:none;font-size:16px;">
-        ❤️ დახმარება
-      </a>
-    </div>
+    <section id="story">
+      <h2 class="section-title">Небольшая история от сердца</h2>
+      <p class="section-subtitle">
+        Спокойный, тёплый текст без давления — чтобы она почувствовала искренность, а не попытку надавить.
+      </p>
+      <div class="story-card">
+        <p>
+          В последнее время я всё чаще возвращаюсь мыслями в те времена, когда мы с тобой просто были рядом.
+          Без лишнего, без сложностей — просто смех, разговоры, дорога, какие-то маленькие моменты,
+          которые тогда казались обычными, а сейчас понимаю, насколько они были настоящими.
+        </p>
+        <br />
+        <p>
+          За это время я много где был, многое увидел, через многое прошёл. Ездил по разным местам,
+          взрослел, менялся, учился выдержке и тому, как по-настоящему ценить человека. Я даже отслужил в Грузии,
+          и за всё это время понял одну простую вещь: не каждый человек оставляет такой след в сердце,
+          который не стирается ни дорогами, ни временем, ни расстоянием.
+        </p>
+        <br />
+        <p>
+          В тебе всегда было что-то особенное. Характер, сила, огонь — настоящий скорпион. Но за этим огнём
+          я всегда видел и другое: твою доброту, тепло и ту редкую глубину, которую не каждый способен заметить сразу.
+          Именно это и осталось со мной сильнее всего.
+        </p>
+        <br />
+        <p>
+          Я не знаю, как сложится дальше и что из этого возможно. Но знаю точно: сколько бы людей ни встречалось
+          на пути, таких, как ты, не находится. И всё, что между нами когда-то было хорошего, для меня до сих пор
+          не стало чем-то случайным. Это часть меня, которую я по-настоящему берегу.
+        </p>
+      </div>
+    </section>
+
+    <section id="notes">
+      <h2 class="section-title">Небольшие тексты между фото</h2>
+      <p class="section-subtitle">
+        Эти короткие фразы можно поставить под фотографиями или между блоками сайта.
+      </p>
+      <div class="note-grid">
+        <div class="mini-note">
+          <h4>О воспоминаниях</h4>
+          <p>Есть моменты, которые не уходят — они просто со временем становятся ещё дороже.</p>
+        </div>
+        <div class="mini-note">
+          <h4>О ней</h4>
+          <p>Сильная по характеру, добрая по душе — именно такой я тебя всегда и помню.</p>
+        </div>
+        <div class="mini-note">
+          <h4>О времени</h4>
+          <p>Прошло много времени, но внутри меня есть вещи, которых время так и не коснулось.</p>
+        </div>
+        <div class="mini-note">
+          <h4>О чувствах</h4>
+          <p>Некоторые люди не забываются не потому, что было больно, а потому, что было по-настоящему.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="timeline-block">
+      <h2 class="section-title">Если хочешь, добавь хронологию</h2>
+      <p class="section-subtitle">
+        Такой блок делает сайт более личным. Ниже пример, который можно переписать под вашу историю.
+      </p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <h3>Когда всё было легко</h3>
+          <p>Время, когда рядом с тобой даже обычные дни становились тёплыми воспоминаниями.</p>
+        </div>
+        <div class="timeline-item">
+          <h3>Дороги и взросление</h3>
+          <p>Я много где побывал, много чего увидел, но некоторые чувства с расстоянием не стали слабее.</p>
+        </div>
+        <div class="timeline-item">
+          <h3>То, что осталось</h3>
+          <p>С годами я понял, что не каждого человека можно встретить дважды. И не каждого можно забыть.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Финальные слова</h2>
+      <p class="section-subtitle">
+        Спокойное завершение без давления. Это лучше, чем тяжёлые просьбы или драматичные обещания.
+      </p>
+      <div class="note-card">
+        <p>
+          Я не хочу давить на тебя громкими словами. Мне просто хотелось собрать в одном месте то,
+          что для меня по-настоящему важно. Всё самое тёплое, что связано с тобой, я до сих пор храню в сердце.
+          И как бы жизнь ни менялась, ты останешься для меня человеком, которого невозможно спутать с кем-то другим.
+        </p>
+      </div>
+    </section>
   </div>
-</header>
 
-<div class="container">
-  <div class="grid" id="dogs"></div>
-</div>
-
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h3 style="margin-bottom:12px">ცხოველის აყვანა</h3>
-    <input id="dogName" readonly>
-    <input id="firstName" placeholder="სახელი">
-    <input id="lastName" placeholder="გვარი">
-    <input id="city" placeholder="ქალაქი">
-    <input id="street" placeholder="ქუჩა">
-    <input id="phone" placeholder="ტელეფონი">
-    <button type="button" onclick="sendForm()">გაგზავნა</button>
-  </div>
-</div>
-
-<div class="success-box" id="successBox">
-  <div class="success-content success-state" id="successContent">
-    <h2 id="messageTitle">✅ წარმატებით გაიგზავნა</h2>
-    <p id="successText"></p>
-  </div>
-</div>
-
-<div id="donation" style="background:#111;color:white;padding:60px 20px;margin-top:60px">
-  <div style="max-width:900px;margin:auto;text-align:center">
-    <h2 style="margin-bottom:20px">💳 მხარდაჭერა საბანკო გადარიცხვით</h2>
-    <p style="opacity:.8;margin-bottom:25px">თითოეული ლარი მნიშვნელოვანია.</p>
-
-    <div style="background:#1f1f1f;padding:20px;border-radius:16px;margin-bottom:15px">
-      <h3>🏦 საქართველოს ბანკი</h3>
-      <p style="font-size:18px;font-weight:bold">GE61BG0000000611213396</p>
-    </div>
-
-    <div style="background:#1f1f1f;padding:20px;border-radius:16px">
-      <h3>🏦 TBC ბანკი</h3>
-      <p style="font-size:18px;font-weight:bold">GE14TB7768945064300046</p>
-    </div>
-  </div>
-</div>
-
-<script>
-const dogs = [
-  {
-    name:"ბონი",
-    img:"https://www.shutterstock.com/shutterstock/videos/1027680257/thumb/1.jpg?ip=x480",
-    story:"ბონი არის პატარა და ძალიან თბილი ლეკვი, რომელსაც მშვიდი და მზრუნველი ოჯახი სჭირდება."
-  },
-  {
-    name:"ტობი",
-    img:"https://media.istockphoto.com/id/527119077/photo/young-pupp.jpg?s=612x612&w=0&k=20&c=V4wjAvq-MpBbi-it9AD1ffhm4hbL7-sJMda2Kscm2GY=",
-    story:"ტობი მეგობრული და ცელქი პატარა ლეკვია, რომელიც ყურადღებას და სიყვარულს ელოდება."
-  },
-  {
-    name:"ლუსი",
-    img:"https://media.istockphoto.com/id/1408330223/photo/photo-of-cute-mongrel-puppies-on-the-street.jpg?s=170667a&w=0&k=20&c=nxC4xht892hIT3PPC6Ra56A_Z8Cvd1qDZSyfZKs7b5k=",
-    story:"ლუსი ძალიან საყვარელი ქუჩის ლეკვია, რომელსაც უსაფრთხო გარემო და მზრუნველი პატრონი სჭირდება."
-  },
-  {
-    name:"ჩარლი",
-    img:"https://cdn.pixabay.com/photo/2019/04/08/23/39/dog-4113323_640.jpg",
-    story:"ჩარლი ენერგიული და კეთილი ძაღლია, რომელიც სიარულსა და ადამიანებთან ყოფნას ძალიან უყვარს."
-  },
-  {
-    name:"მოლი",
-    img:"https://johnnyholland.org/wp-content/uploads/2023/04/photo-1661152900445-e67ccd781141-1024x683.jpg",
-    story:"მოლი წყნარი და ერთგული მეგობარია, რომელიც ახალ სახლში სითბოსა და სიმშვიდეს შეიტანს."
-  }
-];
-
-const container = document.getElementById("dogs");
-let currentDogIndex = null;
-
-const REQUEST_STORE_KEY = "shelter_request_store";
-const BROWSER_LOCK_KEY = "shelter_browser_request_lock";
-const BLOCK_HOURS = 24;
-const BLOCK_MS = BLOCK_HOURS * 60 * 60 * 1000;
-
-dogs.forEach((d, index) => {
-  const el = document.createElement("div");
-  el.className = "dog";
-  el.innerHTML = `
-    <img src="${d.img}" alt="${d.name}">
-    <div class="dog-content">
-      <h3>${d.name}</h3>
-      <div class="story-text">${d.story}</div>
-      <div class="btn" onclick="openForm(${index})">აიყვანე</div>
-    </div>
-  `;
-  container.appendChild(el);
-});
-
-function setCookie(name, value, days = 30){
-  const expires = new Date(Date.now() + days * 86400000).toUTCString();
-  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
-}
-
-function getCookie(name){
-  const parts = document.cookie.split("; ").find(row => row.startsWith(name + "="));
-  return parts ? decodeURIComponent(parts.split("=")[1]) : "";
-}
-
-function getRequestStore(){
-  try{
-    const localData = localStorage.getItem(REQUEST_STORE_KEY);
-    if(localData) return JSON.parse(localData);
-
-    const cookieData = getCookie(REQUEST_STORE_KEY);
-    if(cookieData) return JSON.parse(cookieData);
-  }catch(e){}
-  return {};
-}
-
-function saveRequestStore(store){
-  const value = JSON.stringify(store);
-  localStorage.setItem(REQUEST_STORE_KEY, value);
-  setCookie(REQUEST_STORE_KEY, value, 30);
-}
-
-function getBrowserLock(){
-  try{
-    const localData = localStorage.getItem(BROWSER_LOCK_KEY);
-    if(localData) return JSON.parse(localData);
-
-    const cookieData = getCookie(BROWSER_LOCK_KEY);
-    if(cookieData) return JSON.parse(cookieData);
-  }catch(e){}
-  return null;
-}
-
-function saveBrowserLock(lockData){
-  const value = JSON.stringify(lockData);
-  localStorage.setItem(BROWSER_LOCK_KEY, value);
-  setCookie(BROWSER_LOCK_KEY, value, 30);
-}
-
-function clearBrowserLock(){
-  localStorage.removeItem(BROWSER_LOCK_KEY);
-  document.cookie = `${BROWSER_LOCK_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
-}
-
-function normalizePhone(phone){
-  return phone.replace(/[^\d+]/g, "").trim();
-}
-
-function formatTimeLeft(ms){
-  const totalMinutes = Math.max(1, Math.ceil(ms / 60000));
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  if(hours <= 0) return `${minutes} წუთი`;
-  if(minutes === 0) return `${hours} საათი`;
-  return `${hours} საათი და ${minutes} წუთი`;
-}
-
-function showMessage(type, title, text){
-  const box = document.getElementById("successBox");
-  const content = document.getElementById("successContent");
-  const titleEl = document.getElementById("messageTitle");
-  const textEl = document.getElementById("successText");
-
-  content.classList.remove("success-state", "warning-state");
-  content.classList.add(type === "warning" ? "warning-state" : "success-state");
-
-  titleEl.textContent = title;
-  textEl.innerHTML = text;
-  box.style.display = "flex";
-
-  clearTimeout(window.__messageTimeout);
-  window.__messageTimeout = setTimeout(() => {
-    box.style.display = "none";
-  }, 10000);
-}
-
-function buildBlockedText(lockData, remainingMs){
-  return `
-    თქვენ უკვე გაქვთ გაკეთებული მოთხოვნა ცხოველზე: <strong>${lockData.requestedDogName || "უცნობია"}</strong>.<br>
-    თქვენი რიგის ნომერია: <strong>#${lockData.queueNumber || "-"}</strong>.<br><br>
-    24 საათის განმავლობაში სხვა ცხოველზე ახალ მოთხოვნას ვერ გააკეთებთ.<br>
-    ხელახლა ცდა შეგეძლებათ დაახლოებით <strong>${formatTimeLeft(remainingMs)}</strong> შემდეგ.
-  `;
-}
-
-function openForm(index){
-  const browserLock = getBrowserLock();
-  const now = Date.now();
-
-  if(browserLock && (now - browserLock.firstSentAt) < BLOCK_MS){
-    const remainingMs = BLOCK_MS - (now - browserLock.firstSentAt);
-
-    showMessage(
-      "warning",
-      "🚫 მოთხოვნა უკვე გაკეთებულია",
-      buildBlockedText(browserLock, remainingMs)
-    );
-    return;
-  }
-
-  if(browserLock && (now - browserLock.firstSentAt) >= BLOCK_MS){
-    clearBrowserLock();
-  }
-
-  currentDogIndex = index;
-  document.getElementById("modal").style.display = "flex";
-  document.getElementById("dogName").value = dogs[index].name;
-}
-
-function closeModal(){
-  document.getElementById("modal").style.display = "none";
-}
-
-function sendForm(){
-  const dogNameInput = document.getElementById("dogName");
-  const firstName = document.getElementById("firstName");
-  const lastName = document.getElementById("lastName");
-  const city = document.getElementById("city");
-  const street = document.getElementById("street");
-  const phone = document.getElementById("phone");
-
-  const inputs = [firstName, lastName, city, street, phone];
-  let valid = true;
-
-  inputs.forEach(input => {
-    if(!input.value.trim()){
-      input.style.border = "2px solid red";
-      valid = false;
-    } else {
-      input.style.border = "1px solid #ddd";
-    }
-  });
-
-  if(!valid) return;
-
-  const normalizedPhone = normalizePhone(phone.value);
-
-  if(normalizedPhone.length < 9){
-    phone.style.border = "2px solid red";
-    showMessage(
-      "warning",
-      "⚠️ ტელეფონის ნომერი არასწორია",
-      "გთხოვთ, შეიყვანოთ სწორი მობილურის ნომერი."
-    );
-    return;
-  }
-
-  const store = getRequestStore();
-  const now = Date.now();
-  const currentDogName = dogs[currentDogIndex].name;
-  const browserLock = getBrowserLock();
-
-  if(browserLock && (now - browserLock.firstSentAt) < BLOCK_MS){
-    const remainingMs = BLOCK_MS - (now - browserLock.firstSentAt);
-
-    showMessage(
-      "warning",
-      "🚫 მოთხოვნა უკვე გაკეთებულია",
-      buildBlockedText(browserLock, remainingMs)
-    );
-    closeModal();
-    return;
-  }
-
-  if(browserLock && (now - browserLock.firstSentAt) >= BLOCK_MS){
-    clearBrowserLock();
-  }
-
-  const existingEntry = store[normalizedPhone];
-
-  if(existingEntry && (now - existingEntry.firstSentAt) < BLOCK_MS){
-    const remainingMs = BLOCK_MS - (now - existingEntry.firstSentAt);
-
-    showMessage(
-      "warning",
-      "🚫 მოთხოვნა უკვე გაკეთებულია",
-      buildBlockedText(existingEntry, remainingMs)
-    );
-    closeModal();
-    return;
-  }
-
-  const queue = Math.floor(Math.random() * 81) + 10;
-
-  const savedRequest = {
-    firstSentAt: now,
-    lastAttemptAt: now,
-    requestedDogName: currentDogName,
-    applicantName: `${firstName.value.trim()} ${lastName.value.trim()}`.trim(),
-    phone: normalizedPhone,
-    queueNumber: queue
-  };
-
-  store[normalizedPhone] = savedRequest;
-  saveRequestStore(store);
-  saveBrowserLock(savedRequest);
-
-  closeModal();
-
-  showMessage(
-    "success",
-    "✅ წარმატებით გაიგზავნა",
-    `თქვენი მოთხოვნა მიღებულია ცხოველზე: <strong>${savedRequest.requestedDogName}</strong>.<br>
-     თქვენი რიგის ნომერია: <strong>#${savedRequest.queueNumber}</strong>.<br><br>
-     შემდეგი მოთხოვნის გაკეთება შესაძლებელი იქნება მხოლოდ <strong>${BLOCK_HOURS} საათის</strong> შემდეგ.`
-  );
-
-  dogNameInput.value = "";
-  firstName.value = "";
-  lastName.value = "";
-  city.value = "";
-  street.value = "";
-  phone.value = "";
-  currentDogIndex = null;
-}
-
-window.onclick = function(e){
-  const modal = document.getElementById("modal");
-  const box = document.getElementById("successBox");
-
-  if(e.target === modal){
-    modal.style.display = "none";
-  }
-
-  if(e.target === box){
-    box.style.display = "none";
-  }
-}
-</script>
-
+  <footer>
+    Сделано с теплом и уважением ❤
+  </footer>
 </body>
 </html>
